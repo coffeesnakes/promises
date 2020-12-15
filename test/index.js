@@ -5,8 +5,8 @@ describe('Bare Minimum Requirements', function() {
   require('./bare_minimum/basicChaining.test.js');
 });
 
-xdescribe('Advanced Content', function() {
- 
+describe('Advanced Content', function() {
+
   require('./advanced/collections.test.js');
   require('./advanced/advancedChaining.test.js');
   require('./advanced/PromiseLib.test.js');
