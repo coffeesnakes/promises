@@ -14,8 +14,20 @@ var Promise = require('bluebird');
  * expect a callback function as one of its arguments
  */
 
-var promisify = function(nodeStyleFn) {
+var promisify = function (nodeStyleFn) {
+  let args = [].slice.call(arguments);
 
+  return new Promise(function (resolve, reject) {
+    let cb = function (err, results) {
+      if (err) {
+        return reject(err);
+      }
+      resolve(results);
+    };
+
+    args.push(cb);
+    nodeStyleFn.apply(null, args);
+  });
 };
 
 
@@ -30,8 +42,19 @@ var promisify = function(nodeStyleFn) {
  * is rejected with the rejection reason.
  */
 
-var all = function(arrayOfPromises) {
-  // TODO
+var all = function (arrayOfPromises) {
+  let resolved = [];
+  let len = arrayOfPromises.length;
+  return new Promise(function (resolve, reject) {
+    arrayOfPromises.forEach(function (p, i) {
+      p.then(function (v) {
+        resolved[i] = v;
+        if (!--len) {
+          resolve(resolved);
+        }
+      }).catch(reject);
+    });
+  });
 };
 
 
@@ -42,7 +65,7 @@ var all = function(arrayOfPromises) {
  */
 
 var race = function(arrayOfPromises) {
-  // TODO
+
 };
 
 // Export these functions so we can unit test them

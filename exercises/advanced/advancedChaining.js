@@ -1,4 +1,6 @@
-/**
+/*
+*
+*
  * Your task is to write a function that uses a deep learning
  * algorithm to determine the common set of concepts between
  * multiple github profile pictures
@@ -12,6 +14,8 @@
  * Much of the heavy lifting has been done already in `lib/advancedChainingHelpers`,
  * you just have to wire everything up together! Once you pass this one, you'll
  * be a promise chaining master! Have fun!
+ *
+ *
  */
 
 var Promise = require('bluebird');
@@ -24,9 +28,12 @@ var lib = require('../../lib/advancedChainingLib');
 // `advancedChainingLib.js` file. When creating an API key, you can give it
 // the `Predict on Public and Custom Models` scope
 
-
+var {predictImage, getGitHubProfile, getIntersection} = lib;
 var searchCommonConceptsFromGitHubProfiles = function (githubHandles) {
-  
+  return Promise.all(githubHandles.map(getGitHubProfile)).then((profiles) => {
+    profiles = profiles.map((profile) => profile.avatarUrl);
+    return Promise.all(profiles.map(predictImage)).then(getIntersection);
+  });
 };
 
 // Export these functions so we can unit test them

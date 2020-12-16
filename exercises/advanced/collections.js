@@ -33,29 +33,49 @@
 // return Promise.all(promise1, promise2).then((values) => {
 //   //step 4
 // });
+var Promise = require("bluebird");
+var pluckFirstLine = require("../bare_minimum/promiseConstructor.js")
+  .pluckFirstLineFromFileAsync;
+var fs = Promise.promisifyAll(require("fs"));
+
 var combineFirstLineOfManyFiles = function (filePaths, writePath) {
-  let promises = filePaths.map((file) => {
-    return readFileAsync(file).then((data) => {
-      return data.toString().split("\n")[0];
-    });
+  // TODO
+
+  return Promise.all(filePaths.map(pluckFirstLine)).then(function (
+    firstLineOfFiles
+  ) {
+    var combinedFirstLines = firstLineOfFiles.join("\n");
+    return fs.writeFileAsync(writePath, combinedFirstLines);
   });
-  return Promise.all(promises)
-    .then((lines) => {
-      let buff = Buffer.alloc(0);
-      let count = 1;
-      lines.forEach((line) => {
-        if (count < lines.length) {
-          line += "\n";
-          count++;
-        }
-        buff = Buffer.concat([buff, Buffer.from(line)]);
-      });
-      return buff;
-    })
-    .then((buffer) => {
-      return writeFileAsync(writePath, buffer);
-    });
 };
+
+// Export these functions so we can unit test them
+module.exports = {
+  combineFirstLineOfManyFiles: combineFirstLineOfManyFiles,
+};
+// var combineFirstLineOfManyFiles = function (filePaths, writePath) {
+//   let promises = filePaths.map((file) => {
+//     return readFileAsync(file).then((data) => {
+//       return data.toString().split("\n")[0];
+//     });
+//   });
+//   return Promise.all(promises)
+//     .then((lines) => {
+//       let buff = Buffer.alloc(0);
+//       let count = 1;
+//       lines.forEach((line) => {
+//         if (count < lines.length) {
+//           line += "\n";
+//           count++;
+//         }
+//         buff = Buffer.concat([buff, Buffer.from(line)]);
+//       });
+//       return buff;
+//     })
+//     .then((buffer) => {
+//       return writeFileAsync(writePath, buffer);
+//     });
+// };
 
 // Export these functions so we can unit test them
 module.exports = {
